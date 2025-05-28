@@ -14,6 +14,31 @@ function tratarNumero($numeroBruto, $registrarLog = true) {
     $numero = preg_replace('/\D/', '', $numeroBruto);
     $numeroOriginal = $numero; // Guarda para possível log
 
+    // Lista de todos os DDDs válidos no Brasil (2024) - duplicado para verificação inicial
+    $dddsValidos = [
+        '11', '12', '13', '14', '15', '16', '17', '18', '19', // Região 1 (SP e parte do interior)
+        '21', '22', '24', '27', '28', // Região 2 (RJ e ES)
+        '31', '32', '33', '34', '35', '37', '38', // Região 3 (MG)
+        '41', '42', '43', '44', '45', '46', '47', '48', '49', // Região 4 (PR e SC)
+        '51', '53', '54', '55', // Região 5 (RS)
+        '61', '62', '63', '64', '65', '66', '67', '68', '69', // Região 6 (DF, GO, TO, MT, MS, RO, AC)
+        '71', '73', '74', '75', '77', '79', // Região 7 (BA e SE)
+        '81', '82', '83', '84', '85', '86', '87', '88', '89', // Região 8 (PE, AL, PB, RN, CE, PI, MA)
+        '91', '92', '93', '94', '95', '96', '97', '98', '99'  // Região 9 (PA, AM, RR, AP)
+    ];
+
+    if (substr($numero, 0, 1) === '0' && strlen($numero) >= 3) {
+        $potentialDdd = substr($numero, 1, 2);
+        if (in_array($potentialDdd, $dddsValidos)) {
+            $numeroSemZero = substr($numero, 1);
+            $numeroTratado = '55' . $numeroSemZero;
+            if ($registrarLog) {
+                registrarLog("⚠️ Número com '0' inicial detectado: $numeroOriginal | Removido '0', adicionado DDI 55: $numeroTratado");
+            }
+            return $numeroTratado;
+        }
+    }
+
     // Verifica se é um número simples (sem DDI e sem DDD)
     if (strlen($numero) === 8 || strlen($numero) === 9) {
         // Adiciona 5581 (DDI + DDD 81) para números sem DDD/DDI
@@ -30,19 +55,6 @@ function tratarNumero($numeroBruto, $registrarLog = true) {
     if (substr($numero, 0, 2) === '55') {
         $numero = substr($numero, 2);
     }
-
-    // Lista de todos os DDDs válidos no Brasil (2024)
-    $dddsValidos = [
-        '11', '12', '13', '14', '15', '16', '17', '18', '19', // Região 1 (SP e parte do interior)
-        '21', '22', '24', '27', '28', // Região 2 (RJ e ES)
-        '31', '32', '33', '34', '35', '37', '38', // Região 3 (MG)
-        '41', '42', '43', '44', '45', '46', '47', '48', '49', // Região 4 (PR e SC)
-        '51', '53', '54', '55', // Região 5 (RS)
-        '61', '62', '63', '64', '65', '66', '67', '68', '69', // Região 6 (DF, GO, TO, MT, MS, RO, AC)
-        '71', '73', '74', '75', '77', '79', // Região 7 (BA e SE)
-        '81', '82', '83', '84', '85', '86', '87', '88', '89', // Região 8 (PE, AL, PB, RN, CE, PI, MA)
-        '91', '92', '93', '94', '95', '96', '97', '98', '99'  // Região 9 (PA, AM, RR, AP)
-    ];
 
     // Pega os 2 primeiros dígitos (DDD)
     $ddd = substr($numero, 0, 2);
