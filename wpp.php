@@ -136,7 +136,7 @@ $data = [
 ];
 
 // Inicializa cURL
-$ch = curl_init(''); # URL do webhook
+$ch = curl_init('https://n8nhook.grupoavantti.com.br/webhook/issabel-ura'); # URL do webhook
 
 // Configurações do POST
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
